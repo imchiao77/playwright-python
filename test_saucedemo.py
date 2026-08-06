@@ -1,6 +1,6 @@
 from playwright.sync_api import Page, expect
 from pages.login_page import LoginPage
-
+from pages.inventory_page import InventoryPage
 
 # 測試一：登入成功
 def test_login_success(page: Page):
@@ -24,35 +24,32 @@ def test_login_fail(page: Page):
 def test_add_to_cart(page: Page):
     LoginPage(page).login_as_standard_user()
 
-    page.click(".btn_inventory:first-of-type")
+    inventory_page = InventoryPage(page)
+    inventory_page.add_item_to_cart("Sauce Labs Backpack")
 
-    expect(page.locator(".shopping_cart_badge")).to_have_text("1")
+    expect(inventory_page.cart_badge).to_have_text("1")
 
 
 # 測試四：完整結帳流程
 def test_checkout(page: Page):
     LoginPage(page).login_as_standard_user()
 
-    # 加入商品
-    page.click(".btn_inventory:first-of-type")
+    inventory_page = InventoryPage(page)
+    inventory_page.add_item_to_cart("Sauce Labs Backpack")
+    inventory_page.go_to_cart()
 
-    # 進入購物車
-    page.click(".shopping_cart_link")
     expect(page).to_have_url("https://www.saucedemo.com/cart.html")
 
-    # 點擊結帳
+    # 以下購物車與結帳流程，下一輪重構
     page.click("[data-test='checkout']")
     expect(page).to_have_url("https://www.saucedemo.com/checkout-step-one.html")
 
-    # 填寫收件資訊
     page.fill("[data-test='firstName']", "Elisa")
     page.fill("[data-test='lastName']", "Luo")
     page.fill("[data-test='postalCode']", "10001")
     page.click("[data-test='continue']")
 
-    # 確認訂單頁
     expect(page).to_have_url("https://www.saucedemo.com/checkout-step-two.html")
 
-    # 完成訂單
     page.click("[data-test='finish']")
     expect(page.locator(".complete-header")).to_have_text("Thank you for your order!")

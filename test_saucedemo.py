@@ -1,56 +1,37 @@
 from playwright.sync_api import Page, expect
+from pages.login_page import LoginPage
+
 
 # 測試一：登入成功
 def test_login_success(page: Page):
-    page.goto("https://www.saucedemo.com")
-    page.fill("#user-name", "standard_user")
-    page.fill("#password", "secret_sauce")
-    page.click("#login-button")
+    login_page = LoginPage(page)
+    login_page.goto()
+    login_page.login("standard_user", "secret_sauce")
+
     expect(page).to_have_url("https://www.saucedemo.com/inventory.html")
+
 
 # 測試二：登入失敗（錯誤密碼）
 def test_login_fail(page: Page):
-    page.goto("https://www.saucedemo.com")
-    page.fill("#user-name", "standard_user")
-    page.fill("#password", "wrong_password")
-    page.click("#login-button")
-    expect(page.locator("[data-test='error']")).to_be_visible()
+    login_page = LoginPage(page)
+    login_page.goto()
+    login_page.login("standard_user", "wrong_password")
+
+    expect(login_page.error_message).to_be_visible()
+
 
 # 測試三：加入購物車
 def test_add_to_cart(page: Page):
-    # 先登入
-    page.goto("https://www.saucedemo.com")
-    page.fill("#user-name", "standard_user")
-    page.fill("#password", "secret_sauce")
-    page.click("#login-button")
+    LoginPage(page).login_as_standard_user()
 
-    # 加入第一個商品到購物車
     page.click(".btn_inventory:first-of-type")
 
-    # 確認購物車數量顯示 1
     expect(page.locator(".shopping_cart_badge")).to_have_text("1")
 
-# 測試三：加入購物車
-def test_add_to_cart(page: Page):
-    # 先登入
-    page.goto("https://www.saucedemo.com")
-    page.fill("#user-name", "standard_user")
-    page.fill("#password", "secret_sauce")
-    page.click("#login-button")
-
-    # 加入第一個商品到購物車
-    page.click(".btn_inventory:first-of-type")
-
-    # 確認購物車數量顯示 1
-    expect(page.locator(".shopping_cart_badge")).to_have_text("1")
 
 # 測試四：完整結帳流程
 def test_checkout(page: Page):
-    # 登入
-    page.goto("https://www.saucedemo.com")
-    page.fill("#user-name", "standard_user")
-    page.fill("#password", "secret_sauce")
-    page.click("#login-button")
+    LoginPage(page).login_as_standard_user()
 
     # 加入商品
     page.click(".btn_inventory:first-of-type")

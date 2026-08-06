@@ -5,3 +5,7 @@ __pycache__/
 test-results/
 playwright-report/
 *.pyc
+.env
+.venv/
+.vscode/
+.idea/

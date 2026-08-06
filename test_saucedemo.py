@@ -1,6 +1,9 @@
 from playwright.sync_api import Page, expect
 from pages.login_page import LoginPage
 from pages.inventory_page import InventoryPage
+from pages.cart_page import CartPage
+from pages.checkout_page import CheckoutPage
+
 
 # 測試一：登入成功
 def test_login_success(page: Page):
@@ -8,7 +11,7 @@ def test_login_success(page: Page):
     login_page.goto()
     login_page.login("standard_user", "secret_sauce")
 
-    expect(page).to_have_url("https://www.saucedemo.com/inventory.html")
+    expect(page).to_have_url(InventoryPage.URL)
 
 
 # 測試二：登入失敗（錯誤密碼）
@@ -38,18 +41,15 @@ def test_checkout(page: Page):
     inventory_page.add_item_to_cart("Sauce Labs Backpack")
     inventory_page.go_to_cart()
 
-    expect(page).to_have_url("https://www.saucedemo.com/cart.html")
+    cart_page = CartPage(page)
+    expect(page).to_have_url(CartPage.URL)
+    cart_page.checkout()
 
-    # 以下購物車與結帳流程，下一輪重構
-    page.click("[data-test='checkout']")
-    expect(page).to_have_url("https://www.saucedemo.com/checkout-step-one.html")
+    checkout_page = CheckoutPage(page)
+    expect(page).to_have_url(CheckoutPage.STEP_ONE_URL)
+    checkout_page.fill_information("Elisa", "Luo", "10001")
 
-    page.fill("[data-test='firstName']", "Elisa")
-    page.fill("[data-test='lastName']", "Luo")
-    page.fill("[data-test='postalCode']", "10001")
-    page.click("[data-test='continue']")
+    expect(page).to_have_url(CheckoutPage.STEP_TWO_URL)
+    checkout_page.finish()
 
-    expect(page).to_have_url("https://www.saucedemo.com/checkout-step-two.html")
-
-    page.click("[data-test='finish']")
-    expect(page.locator(".complete-header")).to_have_text("Thank you for your order!")
+    expect(checkout_page.complete_header).to_have_text("Thank you for your order!")

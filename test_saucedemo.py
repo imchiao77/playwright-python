@@ -24,32 +24,28 @@ def test_login_fail(page: Page):
 
 
 # 測試三：加入購物車
-def test_add_to_cart(page: Page):
-    LoginPage(page).login_as_standard_user()
-
-    inventory_page = InventoryPage(page)
+def test_add_to_cart(logged_in_page: Page):
+    inventory_page = InventoryPage(logged_in_page)
     inventory_page.add_item_to_cart("Sauce Labs Backpack")
 
     expect(inventory_page.cart_badge).to_have_text("1")
 
 
 # 測試四：完整結帳流程
-def test_checkout(page: Page):
-    LoginPage(page).login_as_standard_user()
-
-    inventory_page = InventoryPage(page)
+def test_checkout(logged_in_page: Page):
+    inventory_page = InventoryPage(logged_in_page)
     inventory_page.add_item_to_cart("Sauce Labs Backpack")
     inventory_page.go_to_cart()
 
-    cart_page = CartPage(page)
-    expect(page).to_have_url(CartPage.URL)
+    cart_page = CartPage(logged_in_page)
+    expect(logged_in_page).to_have_url(CartPage.URL)
     cart_page.checkout()
 
-    checkout_page = CheckoutPage(page)
-    expect(page).to_have_url(CheckoutPage.STEP_ONE_URL)
+    checkout_page = CheckoutPage(logged_in_page)
+    expect(logged_in_page).to_have_url(CheckoutPage.STEP_ONE_URL)
     checkout_page.fill_information("Elisa", "Luo", "10001")
 
-    expect(page).to_have_url(CheckoutPage.STEP_TWO_URL)
+    expect(logged_in_page).to_have_url(CheckoutPage.STEP_TWO_URL)
     checkout_page.finish()
 
     expect(checkout_page.complete_header).to_have_text("Thank you for your order!")

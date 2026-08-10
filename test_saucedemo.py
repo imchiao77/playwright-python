@@ -49,3 +49,5 @@ def test_checkout(logged_in_page: Page):
     checkout_page.finish()
 
     expect(checkout_page.complete_header).to_have_text("Thank you for your order!")
+
+    

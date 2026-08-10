@@ -200,6 +200,8 @@ python -m pytest test_saucedemo.py --browser chromium --headed -v
 ✅ 登入測試（成功 / 失敗）
 ✅ 購物車加入測試
 ✅ 完整結帳流程測試
+✅ 重構為 Page Object Model 架構
+✅ 以 `conftest.py` 抽出共用 fixture
 ```
 
 ---

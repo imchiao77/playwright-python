@@ -202,6 +202,7 @@ python -m pytest test_saucedemo.py --browser chromium --headed -v
 ✅ 完整結帳流程測試
 ✅ 重構為 Page Object Model 架構
 ✅ 以 `conftest.py` 抽出共用 fixture
+✅ 測試失敗自動截圖
 ```
 
 ---
@@ -243,6 +244,13 @@ playwright-python/
 | 維護性 | ❌ 改一個地方要改多處 | ✅ 只改 Page Class |
 | 可讀性 | 普通 | ✅ 測試邏輯清晰 |
 | 重用性 | 低 | ✅ Page Class 可重複使用 |
+
+### 失敗自動截圖
+
+測試失敗時會自動截圖至 `screenshots/`，檔名格式為 `測試名稱_瀏覽器_時間戳.png`，
+並在終端輸出失敗時所在頁面的 URL，方便快速定位問題。
+
+實作方式為 `conftest.py` 中的 `pytest_runtest_makereport` hook 搭配 autouse fixture。
 
 ---
 

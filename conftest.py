@@ -15,6 +15,11 @@ def logged_in_page(page: Page) -> Page:
     LoginPage(page).login_as_standard_user()
     return page
 
+@pytest.fixture
+def problem_user_page(page: Page) -> Page:
+    """以 problem_user 登入，用於驗證已知缺陷"""
+    LoginPage(page).login_as(LoginPage.PROBLEM_USER)
+    return page
 
 @pytest.hookimpl(wrapper=True)
 def pytest_runtest_makereport(item, call):
